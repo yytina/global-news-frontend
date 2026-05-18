@@ -9,7 +9,7 @@ function App() {
         <Route path="/events/:event_uri/map" element={<MainMap />} />
         
         {/* 기본 경로 설정 (옵션) */}
-        <Route path="/" element={<div>이벤트를 선택해주세요.</div>} />
+        <Route path="/events" element={<MainMap />} />
       </Routes>
     </Router>
   );
