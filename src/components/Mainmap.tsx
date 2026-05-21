@@ -6,42 +6,51 @@ import mapDataWorld from '@highcharts/map-collection/custom/world.topo.json';
 import { COUNTRY_NAME_MAP } from '../constants';
 
 const MainMap = () => {
+    // 🎯 환경 변수 설정
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+    
     console.log("MainMap Rendered!")
     const { event_uri } = useParams<{ event_uri: string }>();
-      
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
+    
+    // 날짜 상태 관리 (서버 응답값 기준)
     const [targetDate, setTargetDate] = useState<string | null>(null);
     const [eventData, setEventData] = useState<any>(null);
     const [top3Events, setTop3Events] = useState<any[]>([]);
     
-    // 🎯 [신규] 클릭된 국가의 상세 데이터를 저장할 상태 관리
     const [selectedCountryData, setSelectedCountryData] = useState<any>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const isTopPage = !event_uri || event_uri === "top";
 
-    // 1. Top3 로드 시 targetDate 설정
+    // 🎯 통합 데이터 페칭 로직
     useEffect(() => {
-        if (!isTopPage) return;
-        
-        // 1. 현재 URL에서 모든 searchParams 가져오기
-        const query = searchParams.toString(); 
+        const query = searchParams.toString();
         const queryString = query ? `?${query}` : "";
-        
-        // 2. API 호출 시 쿼리 스트링 추가
-        fetch(`http://127.0.0.1:8000/events/top${queryString}`)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setTop3Events(data.slice(0, 3));
-                    if (data.length > 0) {
-                        setTargetDate(data[0].date);
+
+        if (isTopPage) {
+            fetch(`${API_BASE}/events/top${queryString}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        setTop3Events(data.slice(0, 3));
+                        setTargetDate(data[0].date); // 👈 서버 데이터 기준으로만 변경
                     }
-                }
-            })
-            .catch(err => console.error("Top Events Fetch Error:", err));
-    }, [isTopPage, searchParams]); // 🎯 [핵심] searchParams가 바뀔 때마다 다시 호출
+                })
+                .catch(err => console.error("Top Events Fetch Error:", err));
+        } else {
+            fetch(`${API_BASE}/events/${event_uri}/map-data`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "SUCCESS") {
+                        setEventData(data);
+                        setTargetDate(data.date); // 👈 서버 데이터 기준으로만 변경
+                    }
+                })
+                .catch(err => console.error("Network Error:", err));
+        }
+    }, [isTopPage, event_uri, searchParams, API_BASE]);
 
     // 2. 개별 이벤트 데이터 로드 시에도 targetDate 동기화
     useEffect(() => {
@@ -51,7 +60,6 @@ const MainMap = () => {
             .then(data => {
                 if (data.status === "SUCCESS") {
                     setEventData(data);
-                    setTargetDate(data.date); // 🎯 상세 페이지 진입 시 해당 이벤트 날짜로 갱신
                 }
             });
     }, [event_uri]);
@@ -108,20 +116,16 @@ const MainMap = () => {
     const handleCountryClick = (countryCode: string) => {
         if (!event_uri) return;
         
-        console.log(`Fetching detail for country: ${countryCode}`);
-        fetch(`http://127.0.0.1:8000/events/${event_uri}/countries/${countryCode.toLowerCase()}`)
+        fetch(`${API_BASE}/events/${event_uri}/countries/${countryCode.toLowerCase()}`)
             .then(res => {
-                if (!res.ok) throw new Error("No data for this country");
+                if (!res.ok) throw new Error("No data");
                 return res.json();
             })
             .then(data => {
                 setSelectedCountryData(data);
-                setIsModalOpen(true); // 데이터가 성공적으로 오면 모달 오픈
+                setIsModalOpen(true);
             })
-            .catch(err => {
-                console.error(err);
-                alert("해당 국가의 상세 분석 데이터가 아직 준비되지 않았습니다.");
-            });
+            .catch(err => console.error(err));
     };
 
     const options: Highcharts.Options = {
