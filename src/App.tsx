@@ -1,15 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainMap from './components/MainMap';
+import ArticleDashboard from './components/ArticleDashboard';
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* :event_uri 부분이 파라미터가 됩니다 */}
-        <Route path="/events/:event_uri/map" element={<MainMap />} />
-        
-        {/* 기본 경로 설정 (옵션) */}
+        <Route path="/" element={<Navigate to="/events" replace />} />
         <Route path="/events" element={<MainMap />} />
+        <Route path="/events/:event_uri/map" element={<MainMap />} />
+        <Route path="/events/:event_uri/countries/:country_code/articles" element={<ArticleDashboard />} />
       </Routes>
     </Router>
   );
