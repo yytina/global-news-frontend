@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { HighchartsReact } from 'highcharts-react-official';
 import Highcharts from 'highcharts/highmaps';
@@ -102,7 +102,7 @@ const MainMap = () => {
                     events: {
                         // 🎯 [신규] Highcharts Map의 국가 클릭 리스너 연결
                         click: function () {
-                            const countryCode = this['hc-key']; // 'fr', 'tr', 'gb' 등 추출
+                            const countryCode = (this as any)['hc-key']; // 'fr', 'tr', 'gb' 등 추출
                             if (countryCode) {
                                 handleCountryClick(countryCode);
                             }
@@ -238,7 +238,7 @@ const MainMap = () => {
                     {/* 모달 바디 (바깥 클릭 시 닫히되 내부 클릭 시 안 닫히게 방어) */}
                     <div style={{
                         backgroundColor: 'white', padding: '24px', borderRadius: '16px',
-                        width: '420px', maxWith: '90%', color: 'black', boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                        width: '420px', maxWidth: '90%', color: 'black', boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
                         position: 'relative'
                     }} onClick={(e) => e.stopPropagation()}>
                         

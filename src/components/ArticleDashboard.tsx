@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BarChart3, Newspaper, Globe, ArrowLeft, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { COUNTRY_NAME_MAP } from '../constants';
@@ -37,7 +37,7 @@ export default function ArticleDashboard() {
   const [expandedArticle, setExpandedArticle] = useState<string | null>(null);
 
   // 1. URL 파라미터를 즉시 사용 (data가 없어도 바로 국가명 표시 가능)
-  const countryName = COUNTRY_NAME_MAP[country_code?.toLowerCase()] || "Global";
+  const countryName = COUNTRY_NAME_MAP[country_code?.toLowerCase() ?? ''] || "Global";
 
   useEffect(() => {
     if (!event_uri || !country_code) return;
