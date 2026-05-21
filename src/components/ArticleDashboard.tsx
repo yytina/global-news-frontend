@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BarChart3, Newspaper, Globe, ArrowLeft, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
 import { COUNTRY_NAME_MAP } from '../constants';
+import { getArticleList } from '../api/endpoints';
 
 // 백엔드 데이터 타입 정의
 interface Article {
@@ -41,21 +42,19 @@ export default function ArticleDashboard() {
   useEffect(() => {
     if (!event_uri || !country_code) return;
     
-    const cleanCountryCode = country_code.toLowerCase();
-    
-    fetch(`http://127.0.0.1:8000/events/${event_uri}/countries/${cleanCountryCode}/articles`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((resData) => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const { data: resData } = await getArticleList(event_uri, country_code);
         setData(resData);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("❌ 데이터 로드 실패:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    
+    fetchData();
   }, [event_uri, country_code]);
 
   // 2. 가드 절 (로딩 및 데이터 없음 처리)
@@ -147,7 +146,6 @@ export default function ArticleDashboard() {
             return (
               <div key={article.uri} className="transition hover:bg-slate-900/60">
                 {/* 기사 요약 헤더 행 */}
-                {/* 리스트 로우 헤더 (클릭 시 아코디언 토글) */}
                 {/* 리스트 로우 헤더 (클릭 시 아코디언 토글) */}
                 <div 
                 onClick={() => setExpandedArticle(isExpanded ? null : article.uri)}

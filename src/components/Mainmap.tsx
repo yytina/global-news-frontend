@@ -4,10 +4,9 @@ import { HighchartsReact } from 'highcharts-react-official';
 import Highcharts from 'highcharts/highmaps';
 import mapDataWorld from '@highcharts/map-collection/custom/world.topo.json';
 import { COUNTRY_NAME_MAP } from '../constants';
+import { getTopEvents, getEventMapData, getCountryDetail } from '../api/endpoints';
 
 const MainMap = () => {
-    // 🎯 환경 변수 설정
-    const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
     
     console.log("MainMap Rendered!")
     const { event_uri } = useParams<{ event_uri: string }>();
@@ -24,45 +23,46 @@ const MainMap = () => {
 
     const isTopPage = !event_uri || event_uri === "top";
 
+    
+
     // 🎯 통합 데이터 페칭 로직
     useEffect(() => {
         const query = searchParams.toString();
         const queryString = query ? `?${query}` : "";
 
         if (isTopPage) {
-            fetch(`${API_BASE}/events/top${queryString}`)
-                .then(res => res.json())
-                .then(data => {
+            getTopEvents(queryString)
+                .then(res => {
+                    const data = res.data;
                     if (Array.isArray(data) && data.length > 0) {
                         setTop3Events(data.slice(0, 3));
-                        setTargetDate(data[0].date); // 👈 서버 데이터 기준으로만 변경
+                        setTargetDate(data[0].date);
                     }
                 })
                 .catch(err => console.error("Top Events Fetch Error:", err));
-        } else {
-            fetch(`${API_BASE}/events/${event_uri}/map-data`)
-                .then(res => res.json())
-                .then(data => {
+        } else if (event_uri) {
+            getEventMapData(event_uri)
+                .then(res => {
+                    const data = res.data;
                     if (data.status === "SUCCESS") {
                         setEventData(data);
-                        setTargetDate(data.date); // 👈 서버 데이터 기준으로만 변경
+                        setTargetDate(data.date);
                     }
                 })
                 .catch(err => console.error("Network Error:", err));
         }
-    }, [isTopPage, event_uri, searchParams, API_BASE]);
+    }, [isTopPage, event_uri, searchParams]);
 
-    // 2. 개별 이벤트 데이터 로드 시에도 targetDate 동기화
-    useEffect(() => {
-        if (!event_uri || event_uri === "top") return;
-        fetch(`http://127.0.0.1:8000/events/${event_uri}/map-data`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "SUCCESS") {
-                    setEventData(data);
-                }
-            });
-    }, [event_uri]);
+    const handleCountryClick = async (countryCode: string) => {
+        if (!event_uri) return;
+        try {
+            const { data } = await getCountryDetail(event_uri, countryCode);
+            setSelectedCountryData(data);
+            setIsModalOpen(true);
+        } catch (err) {
+            console.error("Country Data Fetch Error:", err);
+        }
+    };
 
     // 1. 컴포넌트 내부에서 날짜 포맷팅 함수 정의
     const getKstDate = (utcDateString: string) => {
@@ -77,33 +77,6 @@ const MainMap = () => {
     // 2. 변수 선언
     const formattedKstDate = eventData?.date ? getKstDate(eventData.date) : "Loading...";
 
-    useEffect(() => {
-        if (!isTopPage) return;
-        fetch(`http://127.0.0.1:8000/events/top`)
-            .then(res => res.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    setTop3Events(data.slice(0, 3));
-                }
-            })
-            .catch(err => console.error("Top Events Fetch Error:", err));
-    }, [isTopPage]);
-
-    useEffect(() => {
-        if (!event_uri || event_uri === "top") return;
-        
-        fetch(`http://127.0.0.1:8000/events/${event_uri}/map-data`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "SUCCESS") {
-                    setEventData(data);
-                } else {
-                    console.error("Analysis not ready:", data.message);
-                }
-            })
-            .catch(err => console.error("Network Error:", err));
-    }, [event_uri]);
-
     if (!isTopPage && !eventData) {
         return <div style={{ padding: '20px', color: 'black' }}>데이터를 불러오는 중입니다...</div>;
     }
@@ -111,22 +84,6 @@ const MainMap = () => {
     const chartData = isTopPage || !eventData
         ? [] 
         : eventData.map_data.map((item: any) => [item.country_code, item.sentiment]);
-
-    // 🎯 [신규] 국가 클릭 시 아까 뚫어놓은 백엔드 상세 API를 호출하는 핸들러
-    const handleCountryClick = (countryCode: string) => {
-        if (!event_uri) return;
-        
-        fetch(`${API_BASE}/events/${event_uri}/countries/${countryCode.toLowerCase()}`)
-            .then(res => {
-                if (!res.ok) throw new Error("No data");
-                return res.json();
-            })
-            .then(data => {
-                setSelectedCountryData(data);
-                setIsModalOpen(true);
-            })
-            .catch(err => console.error(err));
-    };
 
     const options: Highcharts.Options = {
         title: { text: isTopPage ? "" : (eventData.title_kr || eventData.title_main) },
@@ -191,7 +148,7 @@ const MainMap = () => {
 
                 {/* 🎯 커스텀 툴팁 (물음표 툴팁 대신 깔끔한 박스 표시) */}
                 <div className="absolute top-full right-0 mt-2 p-2 bg-slate-800 text-white text-[9px] rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                    한국 시간(KST) 기준: {targetDate ? getKstDate(targetDate) : "Loading..."}
+                    한국 시간(KST) 기준: {formattedKstDate}
                 </div>
             </span>
 
