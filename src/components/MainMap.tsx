@@ -137,19 +137,18 @@ const MainMap = () => {
         type: 'mappoint',
         name: 'Epicenter Marker',
         color: '#be123c',
-        data: (isTopPage || !eventData || !eventData.epicenter?.country_code)
-            ? [] 
-            : [{
-                'hc-key': eventData.epicenter.country_code.toLowerCase(),
-                name: COUNTRY_NAME_MAP[eventData.epicenter.country_code.toLowerCase()] || "Epicenter",
-                marker: {
-                    symbol: 'circle',
-                    radius: 8,
-                    lineWidth: 2,
-                    lineColor: '#ffffff',
-                    fillColor: '#be123c'
-                }
-            }],
+        data: (!coords ? [] : [{
+            lat: coords.lat,
+            lon: coords.lon,
+            name: COUNTRY_NAME_MAP[code] || "Epicenter",
+            marker: {
+                symbol: 'circle',
+                radius: 8,
+                lineWidth: 2,
+                lineColor: '#ffffff',
+                fillColor: '#be123c'
+            }
+        }]),
         zIndex: 100,
         // 🎯 [수정] 툴팁 옵션을 여기서 직접 정의하지 말고 
         // 하이차트 전체 옵션이나 plotOptions로 옮기세요.
