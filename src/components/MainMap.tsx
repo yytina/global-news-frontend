@@ -37,6 +37,7 @@ const MainMap = () => {
                     if (Array.isArray(data) && data.length > 0) {
                         setTop3Events(data.slice(0, 3));
                         setTargetDate(data[0].date);
+                        console.log(data[0].date)
                     }
                 })
                 .catch(err => console.error("Top Events Fetch Error:", err));
@@ -46,7 +47,6 @@ const MainMap = () => {
                     const data = res.data;
                     if (data.status === "SUCCESS") {
                         setEventData(data);
-                        setTargetDate(data.date);
                     }
                 })
                 .catch(err => console.error("Network Error:", err));
