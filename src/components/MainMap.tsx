@@ -115,12 +115,6 @@ const MainMap = () => {
                         }
                     }
                 }
-            },
-            // [신규] 마커 포인트에 대한 스타일 및 툴팁 설정
-            mappoint: {
-                tooltip: {
-                    enabled: false
-                }
             }
         },
         series: [
