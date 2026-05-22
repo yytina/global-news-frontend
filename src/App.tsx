@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import MainMap from './components/MainMap.tsx';
+import MainMap from './components/MainMap';
 import ArticleDashboard from './components/ArticleDashboard';
 
 function App() {
