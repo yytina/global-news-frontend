@@ -3,7 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { HighchartsReact } from 'highcharts-react-official';
 import Highcharts from 'highcharts/highmaps';
 import mapDataWorld from '@highcharts/map-collection/custom/world.topo.json';
-import { COUNTRY_NAME_MAP } from '../constants';
+import { COUNTRY_COORDS, COUNTRY_NAME_MAP } from '../constants';
 import { getTopEvents, getEventMapData, getCountryDetail } from '../api/endpoints';
 
 const MainMap = () => {
@@ -47,6 +47,9 @@ const MainMap = () => {
                     const data = res.data;
                     if (data.status === "SUCCESS") {
                         setEventData(data);
+                        console.log("eventData");
+                        console.log(data);
+                        console.log(data.epicenter.country_code);
                     }
                 })
                 .catch(err => console.error("Network Error:", err));
@@ -76,6 +79,9 @@ const MainMap = () => {
 
     // 2. 변수 선언
     const formattedKstDate = eventData?.date ? getKstDate(eventData.date) : "Loading...";
+    const code = eventData?.epicenter.country_code.toLowerCase();
+    const coords = COUNTRY_COORDS[code];
+
 
     if (!isTopPage && !eventData) {
         return <div style={{ padding: '20px', color: 'black' }}>데이터를 불러오는 중입니다...</div>;
@@ -109,6 +115,12 @@ const MainMap = () => {
                         }
                     }
                 }
+            },
+            // [신규] 마커 포인트에 대한 스타일 및 툴팁 설정
+            mappoint: {
+                tooltip: {
+                    enabled: false
+                }
             }
         },
         series: [{
@@ -119,7 +131,26 @@ const MainMap = () => {
             name: 'Sentiment Index',
             allAreas: true,
             tooltip: { valueDecimals: 2 }
-        }]
+        },
+        {
+            type: 'mappoint',
+            name: 'Epicenter Marker',
+            color: '#be123c',
+            data: (!coords ? [] : [{
+            lat: coords.lat,
+            lon: coords.lon,
+            name: COUNTRY_NAME_MAP[code] || "Epicenter",
+            marker: {
+                symbol: 'circle',
+                radius: 8,
+                lineWidth: 2,
+                lineColor: '#ffffff',
+                fillColor: '#be123c'
+            }
+        }]),
+            zIndex: 100
+        } 
+    ]
     };
 
     return (
