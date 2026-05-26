@@ -75,7 +75,7 @@ export default function ArticleDashboard() {
         onClick={() => navigate('/events')} 
         className="text-xl font-black tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent cursor-pointer select-none hover:opacity-80 transition"
       >
-        Global News Sentimental Pause
+        Global News Sentiment Pulse
       </div>
       <button 
         onClick={() => navigate('/events')}
