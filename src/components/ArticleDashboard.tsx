@@ -115,7 +115,7 @@ export default function ArticleDashboard() {
         </div>
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl">
           <div className="text-xs text-slate-400 font-medium">Avg Sentiment</div>
-          <div className={`text-2xl font-bold mt-1 ${Number(avgMetric('score_sentiment')) < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+          <div className={`text-2xl font-bold mt-1 ${Number(avgMetric('score_sentiment')) < 0 ? 'text-sentiment-negative' : 'text-sentiment-positive'}`}>
             {avgMetric('score_sentiment')}
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function ArticleDashboard() {
         </div>
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl">
           <div className="text-xs text-slate-400 font-medium">Avg Sensationalism</div>
-          <div className="text-2xl font-bold text-rose-400 mt-1">{avgMetric('score_sensationalism')}</div>
+          <div className="text-2xl font-bold text-sentiment-negative mt-1">{avgMetric('score_sensationalism')}</div>
         </div>
       </div>
 
@@ -167,7 +167,7 @@ export default function ArticleDashboard() {
                     {/* 1. Sentiment */}
                     <div className="w-20">
                     <div className="text-[10px] text-slate-500 uppercase tracking-wider font-sans mb-0.5">Sentiment</div>
-                    <span className={`text-sm font-bold ${article.score_sentiment < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                    <span className={`text-sm font-bold ${article.score_sentiment < 0 ? 'text-sentiment-negative' : 'text-sentiment-positive'}`}>
                         {article.score_sentiment > 0 ? `+${article.score_sentiment.toFixed(1)}` : article.score_sentiment.toFixed(1)}
                     </span>
                     </div>

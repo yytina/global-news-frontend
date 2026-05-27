@@ -8,4 +8,15 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  theme: {
+    extend: {
+      colors: {
+        // 원하는 커스텀 이름으로 지정
+        sentiment: {
+          negative: '#0022FE',
+          positive: '#EF0000',
+        }
+      },
+    },
+  },
 }
