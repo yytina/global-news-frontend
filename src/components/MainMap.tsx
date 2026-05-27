@@ -226,7 +226,7 @@ const MainMap = () => {
                             >
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '11px' }}>
                                     <span style={{ color: '#888' }}>Rank {idx + 1}</span>
-                                    <span className={`font-bold ${isNegative ? 'text-sentiment-negative' : 'text-sentiment-positive'}`}>
+                                    <span className={`font-bold ${isNegative ? 'text-blue-400' : 'text-rose-400'}`}>
                                         {Math.abs(Math.round(event.avg_sentiment * 100))}% {isNegative ? 'Negative' : 'Positive'}
                                     </span>
                                 </div>
@@ -303,7 +303,7 @@ const MainMap = () => {
                             
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span>감정 (Sentiment):</span>
-                                <strong className={selectedCountryData.score_sentiment < 0 ? 'text-sentiment-negative' : 'text-sentiment-positive'}>{selectedCountryData.score_sentiment.toFixed(2)}</strong>
+                                <strong className={selectedCountryData.score_sentiment < 0 ? 'text-blue-400' : 'text-rose-400'}>{selectedCountryData.score_sentiment.toFixed(2)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span>객관성 (Objectivity):</span>
