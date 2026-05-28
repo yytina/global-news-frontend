@@ -69,12 +69,17 @@ const MainMap = () => {
 
     // 1. 컴포넌트 내부에서 날짜 포맷팅 함수 정의
     const getKstDate = (utcDateString: string) => {
-        // UTC 날짜를 Date 객체로 생성
+        // 1. 문자열을 UTC 당일 정각 기준으로 Date 객체 변환 (예: '2026-05-20T00:00:00Z')
         const date = new Date(utcDateString + 'T00:00:00Z');
-        // 한국 시간(KST)으로 변환 후 포맷팅
-        return date.toLocaleDateString('ko-KR', { 
-            year: 'numeric', month: 'long', day: 'numeric' 
+        
+        // 2. 타임존을 UTC로 고정하여 브라우저 환경에 관계없이 날짜 숫자 그대로 추출
+        const formattedDate = date.toLocaleDateString('ko-KR', { 
+            year: 'numeric', month: 'long', day: 'numeric',
+            timeZone: 'UTC' 
         });
+
+        // 3. 해당 UTC 일자의 수집 마감 시점인 KST 오전 9시 정보를 명시적으로 결합
+        return `${formattedDate} 오전 09:00 마감`;
     };
 
     // 2. 변수 선언
