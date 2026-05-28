@@ -105,9 +105,11 @@ const MainMap = () => {
             min: -1,
             max: 1,
             stops: [
-                [0, '#0000FF'],   // 파랑
-                [0.5, '#F0F0F0'], // 회색
-                [1, '#FF0000']    // 빨강
+                [0, '#1e40af'],    // -1.0 : 진한 파랑 (Deep Negative)
+                [0.35, '#93c5fd'], // -0.3 : 연한 파랑 (Soft Negative)
+                [0.5, '#bbf7d0'],  //  0.0 : 연한 녹색 (Perfect Neutral) 👈 데이터 있는 0을 녹색으로 변경
+                [0.65, '#fca5a5'], // +0.3 : 연한 빨강 (Soft Positive)
+                [1, '#b91c1c']     // +1.0 : 진한 빨강 (Deep Positive)
             ]
         },
         plotOptions: {
