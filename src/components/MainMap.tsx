@@ -147,16 +147,30 @@ const MainMap = () => {
             name: COUNTRY_NAME_MAP[code] || "Epicenter",
             marker: {
                 symbol: 'circle',
-                radius: 8,
-                lineWidth: 2,
+                radius: 4,          // 👈 기존 8에서 4로 줄여 영토 가림 최소화
+                lineWidth: 1.5,
                 lineColor: '#ffffff',
-                fillColor: '#be123c'
+                fillColor: '#be123c',
+                states: {
+                    hover: {
+                        radius: 5,  // 👈 마우스 호버 시 마커가 과하게 커져 지도를 다시 가리는 현상 방지
+                        lineWidth: 1.5
+                    }
+                }
             }
         }]),
         zIndex: 100,
-        // 🎯 [수정] 툴팁 옵션을 여기서 직접 정의하지 말고 
-        // 하이차트 전체 옵션이나 plotOptions로 옮기세요.
-        } as any // 👈 이 부분이 중요합니다. 타입 검사를 무시하고 통과시킵니다.
+        // 🎯 마커 자체의 마우스 반응성을 꺼서, 마커를 클릭해도 밑에 있는 스페인 영토가 클릭되도록 유도
+        states: {
+            hover: {
+                enabled: true
+            }
+        },
+        stickyTracking: false, // 👈 마우스가 미세하게 벗어났을 때 이벤트를 쥐고 있지 않도록 해제
+        tooltip: {
+            enabled: false     // 👈 마커 자체 툴팁을 꺼야 국가명 툴팁과 엉키지 않고 부드럽게 스페인이 찍힙니다.
+        }
+    } as any
     ] as any[]
     };
 
