@@ -78,7 +78,7 @@ const MainMap = () => {
     };
 
     // 2. 변수 선언
-    const formattedKstDate = eventData?.date ? getKstDate(eventData.date) : "Loading...";
+    const formattedKstDate = top3Events[0]?.date? getKstDate(top3Events[0]?.date) : "Loading...";
     const code = eventData?.epicenter.country_code.toLowerCase();
     const coords = COUNTRY_COORDS[code];
 
